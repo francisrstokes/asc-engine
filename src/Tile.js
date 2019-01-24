@@ -1,15 +1,8 @@
-const zPositions = {
-  BG: 0,
-  MG: 1,
-  FG: 2,
-};
-
-const properties = {
-  SOLID: 0
-};
+const {fromify} = require('./util');
+const {LAYERS} = require('./constants');
 
 class Tile {
-  constructor(char, color, zPos = zPositions.BG) {
+  constructor(char, color, zPos = LAYERS.BG) {
     this.char = char;
     this.color = color;
     this.zPos = zPos;
@@ -26,8 +19,6 @@ class Tile {
   }
 }
 
-module.exports = {
-  Tile,
-  ...zPositions,
-  ...properties
-};
+Tile.from = fromify(Tile);
+
+module.exports = Tile;

@@ -1,4 +1,4 @@
-const {posToGridIndex} = require('./util');
+const {posToGridIndex, fromify} = require('./util');
 
 class Area {
   constructor(width, height, offset, size) {
@@ -10,6 +10,7 @@ class Area {
     this.grid = [];
 
     this.actors = [];
+
     this.items = [];
 
     this.handlers = {};
@@ -27,5 +28,7 @@ class Area {
     this.grid[i] = tile;
   }
 }
+
+Area.from = fromify(Area);
 
 module.exports = Area;

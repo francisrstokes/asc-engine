@@ -56,13 +56,19 @@ class Game {
       this.deltaTime = 0;
       this.frames++;
 
+      this.publish('@@FRAME_BEFORE_UPDATE');
       this.onUpdate();
+
+      this.publish('@@FRAME_BEFORE_DRAW');
       this.onDraw();
 
+      this.publish('@@FRAME_BEFORE_RENDER_COMMIT');
       this.renderer.commit();
 
       // Reset the frame values for input
       this.input.update();
+
+      this.publish('@@FRAME_COMPLETE');
     }
 
     requestAnimationFrame(this.boundDraw);
