@@ -1,4 +1,3 @@
-const {FG, MG, BG} = require('./Tile');
 const {pick} = require('./util');
 
 const FONT = `'Source Code Pro', monospace`;
@@ -17,13 +16,21 @@ class Renderer {
 
     this.setTileSize(20);
 
-    this.buffers = [ [], [], [] ];
+    this.buffers = [ [], [], [], [] ];
   }
 
   commit() {
+    this.pushStyle();
     for (let i = 0; i < this.buffers.length; i++) {
-      while (this.buffers[i].length) this.buffers[i].pop()();
+      while (this.buffers[i].length) {
+        const {pos, color, char, draw} = this.buffers[i].pop();
+        if (draw) {
+          this.ctx.fillStyle = color;
+          this.ctx.fillText(char, pos[0], pos[1]);
+        }
+      }
     }
+    this.popStyle();
   }
 
   pushStyle() {
@@ -59,12 +66,12 @@ class Renderer {
     this.popStyle();
   }
 
-  drawTile(t, pos) {
-    this.buffers[t.zPos].unshift(() => {
-      this.pushStyle();
-      this.ctx.fillStyle = t.color;
-      this.ctx.fillText(t.char, pos[0], pos[1]);
-      this.popStyle();
+  drawTile({char, color, zPos}, pos) {
+    this.buffers[zPos].unshift({
+      pos,
+      char,
+      color,
+      draw: true
     });
   }
 

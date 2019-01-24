@@ -1,4 +1,5 @@
-const {Tile, BG} = require('./Tile');
+const Tile = require('./Tile');
+const {fromify} = require('./util');
 
 class AnimatedTile extends Tile {
   constructor(timeline, animationLength) {
@@ -19,5 +20,7 @@ class AnimatedTile extends Tile {
     }
   }
 }
+
+AnimatedTile.from = fromify(AnimatedTile);
 
 module.exports = AnimatedTile;
