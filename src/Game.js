@@ -66,7 +66,6 @@ class Game {
       this.renderer.commit();
 
       this.input.update();
-
       this.publish('@@FRAME_COMPLETE');
     });
 
