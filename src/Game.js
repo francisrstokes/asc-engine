@@ -4,6 +4,7 @@ const GameState = require('./GameState');
 const Input = require('./Input');
 const PubSub = require('./PubSub');
 const Renderer = require('./Renderer');
+const Time = require('./Time');
 const {posToGridIndex} = require('./util');
 
 class Game {
@@ -16,12 +17,12 @@ class Game {
     this.renderer = new Renderer(canvas, canvasWidth, canvasHeight);
 
     this.area = null;
+    this.time = new Time();
+    this.time.track('@@FRAMES', 1);
 
     this.input = new Input();
     this.state = new GameState();
 
-    this.deltaTime = 0;
-    this.lastTime = Date.now();
     this.frames = 0;
     this.boundDraw = this.draw.bind(this);
 
@@ -51,9 +52,8 @@ class Game {
   }
 
   draw() {
-    this.deltaTime += Date.now() - this.lastTime;
-    if (this.deltaTime >= 16) {
-      this.deltaTime = 0;
+    this.time.update();
+    this.time.ifReady('@@FRAMES', () => {
       this.frames++;
 
       this.publish('@@FRAME_BEFORE_UPDATE');
@@ -65,11 +65,10 @@ class Game {
       this.publish('@@FRAME_BEFORE_RENDER_COMMIT');
       this.renderer.commit();
 
-      // Reset the frame values for input
       this.input.update();
 
       this.publish('@@FRAME_COMPLETE');
-    }
+    });
 
     requestAnimationFrame(this.boundDraw);
   }

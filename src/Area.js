@@ -1,4 +1,4 @@
-const {posToGridIndex, fromify} = require('./util');
+const {posToGridIndex, posFromGridIndex, fromify} = require('./util');
 
 class Area {
   constructor(width, height, offset, size) {
@@ -26,6 +26,13 @@ class Area {
       throw new RangeError(`Can't set out of range index ${i} (${x}, ${y}) on grid with only ${this.grid.length} tiles`);
     }
     this.grid[i] = tile;
+  }
+
+  iterateGridIn2d(fn) {
+    this.grid.forEach((t, i) => {
+      const pos = posFromGridIndex(i, this.width, this.height);
+      fn(t, pos);
+    });
   }
 }
 
