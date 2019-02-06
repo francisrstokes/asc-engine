@@ -1,11 +1,11 @@
 const {pick} = require('./util');
 
-const FONT = `'Source Code Pro', monospace`;
-
 class Renderer {
   constructor(canvas, canvasWidth, canvasHeight) {
     canvas.height = canvasHeight;
     canvas.width = canvasWidth;
+
+    this.font = `'Source Code Pro', monospace`;
 
     this._styleStack = [];
     this.ctx = canvas.getContext('2d');
@@ -52,7 +52,7 @@ class Renderer {
   setTileSize(size) {
     if (size !== this.size) {
       this.size = size;
-      this.ctx.font = `${this.size}px ${FONT}`;
+      this.ctx.font = `${this.size}px ${this.font}`;
     }
   }
 

@@ -9,7 +9,11 @@ class Animation {
     this.animationLength = animationLength;
     this.loop = loop;
     this.times = times;
+    this.freezeOnLastFrame = false;
     this.onComplete = null;
+
+    this.isComplete = false;
+    this.state = 0;
   }
 
   start() {
@@ -21,29 +25,40 @@ class Animation {
   }
 
   reset() {
+    this.state = 0;
+    this.isComplete = false;
     this.active = false;
     this.frame = 0;
   }
 
   draw(game, tileToScreen) {
     if (this.active) {
-      const ai = Math.floor(this.frame / (this.animationLength / (this.timeline.length * this.times))) % this.timeline.length;
+      this.state = Math.floor(this.frame / (this.animationLength / (this.timeline.length * this.times))) % this.timeline.length;
 
-      const frame = this.timeline[ai];
+      const frame = this.timeline[this.state];
       frame.forEach(({tile, pos}) => {
         const screenPos = tileToScreen(vAdd(pos, this.pos));
         game.renderer.drawTile(tile, screenPos);
       });
 
-      this.frame++;
-      if (this.frame >= this.animationLength) {
-        if (this.loop) {
-          this.frame = 0;
-        } else {
-          this.reset();
-          if (typeof this.onComplete === 'function') {
-            this.onComplete();
+      if (!this.isComplete) {
+        if (this.frame + 1 >= this.animationLength) {
+          if (this.loop) {
+            this.frame = 0;
+          } else {
+
+            if (this.freezeOnLastFrame) {
+              this.isComplete = true;
+            } else {
+              this.reset();
+            }
+
+            if (typeof this.onComplete === 'function') {
+              this.onComplete();
+            }
           }
+        } else {
+          this.frame++;
         }
       }
     }

@@ -19,6 +19,15 @@ class Input {
     };
 
     const keyupHandler = e => {
+      if (!this.keyStates[e.key]) {
+        this.keyStates[e.key] = {
+          state: false,
+          downThisFrame: false,
+          upThisFrame: true,
+          lock: false
+        };
+        return;
+      }
       this.keyStates[e.key].lock = false;
       this.keyStates[e.key].state = false;
       this.keyStates[e.key].upThisFrame = true;

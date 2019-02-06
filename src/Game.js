@@ -1,10 +1,10 @@
 const {vAdd, vScale} = require('vec-la-fp');
 
-const GameState = require('./GameState');
 const Input = require('./Input');
 const PubSub = require('./PubSub');
 const Renderer = require('./Renderer');
 const Time = require('./Time');
+const { LIFECYCLE } = require('./constants');
 const {posToGridIndex} = require('./util');
 
 class Game {
@@ -21,7 +21,6 @@ class Game {
     this.time.track('@@FRAMES', 1);
 
     this.input = new Input();
-    this.state = new GameState();
 
     this.frames = 0;
     this.boundDraw = this.draw.bind(this);
@@ -56,17 +55,17 @@ class Game {
     this.time.ifReady('@@FRAMES', () => {
       this.frames++;
 
-      this.publish('@@FRAME_BEFORE_UPDATE');
+      this.publish(LIFECYCLE.BEFORE_UPDATE);
       this.onUpdate();
 
-      this.publish('@@FRAME_BEFORE_DRAW');
+      this.publish(LIFECYCLE.BEFORE_DRAW);
       this.onDraw();
 
-      this.publish('@@FRAME_BEFORE_RENDER_COMMIT');
+      this.publish(LIFECYCLE.BEFORE_COMMIT);
       this.renderer.commit();
 
       this.input.update();
-      this.publish('@@FRAME_COMPLETE');
+      this.publish(LIFECYCLE.FRAME_COMPLETE);
     });
 
     requestAnimationFrame(this.boundDraw);
