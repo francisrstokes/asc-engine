@@ -3,6 +3,7 @@ const {vAdd, vScale} = require('vec-la-fp');
 const Input = require('./Input');
 const PubSub = require('./PubSub');
 const Renderer = require('./Renderer');
+const SceneManager = require('./SceneManager');
 const Time = require('./Time');
 const { LIFECYCLE } = require('./constants');
 const {posToGridIndex} = require('./util');
@@ -20,6 +21,7 @@ class Game {
     this.time = new Time();
     this.time.track('@@FRAMES', 1);
 
+    this.scenes = new SceneManager(this);
     this.input = new Input();
 
     this.frames = 0;
