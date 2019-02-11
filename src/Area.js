@@ -1,3 +1,4 @@
+const {vAdd, vScale} = require('vec-la-fp');
 const {posToGridIndex, posFromGridIndex, fromify} = require('./util');
 
 class Area {
@@ -7,13 +8,10 @@ class Area {
     this.offset = offset;
     this.size = size;
 
+    this.transform = pos => vAdd(vScale(this.size, pos), this.offset);
+
     this.grid = [];
 
-    this.actors = [];
-
-    this.items = [];
-
-    this.handlers = {};
   }
 
   setGrid(grid) {

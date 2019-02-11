@@ -23,8 +23,11 @@ class Renderer {
     this.pushStyle();
     for (let i = 0; i < this.buffers.length; i++) {
       while (this.buffers[i].length) {
-        const {pos, color, char, draw} = this.buffers[i].pop();
+        const {pos, color, char, draw, size} = this.buffers[i].pop();
         if (draw) {
+          if (this.size !== size) {
+            this.setTileSize(size);
+          }
           this.ctx.fillStyle = color;
           this.ctx.fillText(char, pos[0], pos[1]);
         }
@@ -71,7 +74,8 @@ class Renderer {
       pos,
       char,
       color,
-      draw: true
+      draw: true,
+      size: this.size
     });
   }
 

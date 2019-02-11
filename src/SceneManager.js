@@ -9,6 +9,12 @@ class SceneManager {
     this.scenes[id] = scene;
   }
 
+  get(id) {
+    return this.scenes[id]
+      ? this.scenes[id]
+      : null;
+  }
+
   setScene(id) {
     if (!(id in this.scenes)) {
       throw new Error(`No scene with id ${id}`);
