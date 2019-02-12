@@ -1,27 +1,27 @@
-class Scene {
+const EventProvider = require('./EventProvider');
+
+class Scene extends EventProvider {
   constructor() {
+    super();
+
+    this.bindEvents = true;
     this.load = this.load.bind(this);
     this.unload = this.unload.bind(this);
     this.update = this.update.bind(this);
     this.draw = this.draw.bind(this);
-
-    this.onLoad = function () {};
-    this.onUnload = function () {};
-    this.onUpdate = function () {};
-    this.onDraw = function () {};
   }
 
   load(game) {
-    this.onLoad.call(this, game);
+    this.trigger('load', game);
   }
   unload(game) {
-    this.onUnload.call(this, game);
+    this.trigger('unload', game);
   }
   update(game) {
-    this.onUpdate.call(this, game);
+    this.trigger('update', game);
   }
   draw(game) {
-    this.onDraw.call(this, game);
+    this.trigger('draw', game);
   }
 }
 

@@ -1,7 +1,10 @@
 const {vAdd} = require('vec-la-fp');
+const EventProvider = require('./EventProvider');
 
-class Animation {
+class Animation extends EventProvider {
   constructor(timeline, animationLength, pos, times = 1, loop = false) {
+    super();
+
     this.timeline = timeline;
     this.active = false;
     this.pos = pos;
@@ -10,9 +13,7 @@ class Animation {
     this.loop = loop;
     this.times = times;
     this.freezeOnLastFrame = false;
-    this.onComplete = null;
 
-    this.isComplete = false;
     this.state = 0;
   }
 
@@ -53,9 +54,7 @@ class Animation {
               this.reset();
             }
 
-            if (typeof this.onComplete === 'function') {
-              this.onComplete();
-            }
+            this.trigger('complete');
           }
         } else {
           this.frame++;

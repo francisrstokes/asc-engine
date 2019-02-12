@@ -1,18 +1,15 @@
 const {vAdd, vScale} = require('vec-la-fp');
 
 const Input = require('./Input');
-const PubSub = require('./PubSub');
 const Renderer = require('./Renderer');
 const SceneManager = require('./SceneManager');
 const Time = require('./Time');
-const { LIFECYCLE } = require('./constants');
 const {posToGridIndex} = require('./util');
+const EventProvider = require('./EventProvider');
 
-class Game {
+class Game extends EventProvider {
   constructor(canvasId, canvasWidth, canvasHeight) {
-    const events = new PubSub();
-    this.subscribe = events.subscribe.bind(events);
-    this.publish = events.publish.bind(events);
+    super();
 
     const canvas = document.getElementById(canvasId);
     this.renderer = new Renderer(canvas, canvasWidth, canvasHeight);
@@ -26,9 +23,6 @@ class Game {
 
     this.frames = 0;
     this.boundDraw = this.draw.bind(this);
-
-    this.onUpdate = () => {};
-    this.onDraw = () => {};
   }
 
   createScreenRegion(pos, getTileSize) {
@@ -56,18 +50,14 @@ class Game {
     this.time.update();
     this.time.ifReady('@@FRAMES', () => {
       this.frames++;
-
-      this.publish(LIFECYCLE.BEFORE_UPDATE);
-      this.onUpdate();
-
-      this.publish(LIFECYCLE.BEFORE_DRAW);
-      this.onDraw();
-
-      this.publish(LIFECYCLE.BEFORE_COMMIT);
+      this.trigger('beforeUpdate');
+      this.trigger('update');
+      this.trigger('beforeDraw');
+      this.trigger('draw');
+      this.trigger('beforeCommit');
       this.renderer.commit();
-
       this.input.update();
-      this.publish(LIFECYCLE.FRAME_COMPLETE);
+      this.trigger('frameComplete');
     });
 
     requestAnimationFrame(this.boundDraw);

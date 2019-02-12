@@ -11,7 +11,6 @@ class Area {
     this.transform = pos => vAdd(vScale(this.size, pos), this.offset);
 
     this.grid = [];
-
   }
 
   setGrid(grid) {
