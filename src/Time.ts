@@ -1,10 +1,16 @@
 const FRAME_TIME = 16.666667;
 
-class Time {
-  constructor() {
-    this.tracks = {};
-    this.trackKeys = [];
-  }
+export type TimeState = {
+  deltaTime: number,
+  lastTime: number,
+  wait: number
+}
+
+export type Thunk = () => void;
+
+export class Time {
+  tracks: Record<string, TimeState> = {};
+  trackKeys: Array<string> = [];
 
   update() {
     const now = Date.now();
@@ -18,11 +24,11 @@ class Time {
     this.trackKeys = Object.keys(this.tracks);
   }
 
-  updateFrames(name, frames) {
+  updateFrames(name: string, frames: number) {
     this.tracks[name].wait = frames * FRAME_TIME;
   }
 
-  track(name, frames) {
+  track(name: string, frames: number) {
     this.tracks[name] = {
       deltaTime: 0,
       lastTime: Date.now(),
@@ -31,17 +37,15 @@ class Time {
     this.computeKeys();
   }
 
-  untrack(name) {
+  untrack(name: string) {
     delete this.tracks[name];
     this.computeKeys();
   }
 
-  ifReady(name, fn) {
+  ifReady(name: string, fn: Thunk) {
     if (this.tracks[name].deltaTime >= this.tracks[name].wait) {
       this.tracks[name].deltaTime = 0;
       fn();
     }
   }
 }
-
-module.exports = Time;
