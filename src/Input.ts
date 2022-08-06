@@ -1,7 +1,16 @@
-class Input {
+export type KeyState = {
+  state: boolean;
+  downThisFrame: boolean;
+  upThisFrame: boolean;
+  lock: boolean;
+}
+
+export class Input {
+  private keyStates: Record<string, KeyState> = {};
+  cleanup: () => void;
+
   constructor() {
-    this.keyStates = {};
-    const keydownHandler = e => {
+    const keydownHandler = (e: KeyboardEvent) => {
       if (this.keyStates[e.key] && !this.keyStates[e.key].lock) {
         if (!this.keyStates[e.key]) {
           this.keyStates[e.key] = {
@@ -12,13 +21,14 @@ class Input {
           };
           return;
         }
+
         this.keyStates[e.key].lock = true;
         this.keyStates[e.key].state = true;
         this.keyStates[e.key].downThisFrame = true;
       }
     };
 
-    const keyupHandler = e => {
+    const keyupHandler = (e: KeyboardEvent) => {
       if (!this.keyStates[e.key]) {
         this.keyStates[e.key] = {
           state: false,
@@ -28,6 +38,7 @@ class Input {
         };
         return;
       }
+
       this.keyStates[e.key].lock = false;
       this.keyStates[e.key].state = false;
       this.keyStates[e.key].upThisFrame = true;
@@ -42,23 +53,24 @@ class Input {
     };
   }
 
-  keyIsDown(key) {
+  keyIsDown(key: string) {
     if (!(key in this.keyStates)) {
       this.keyStates[key] = {
         state: false,
         downThisFrame: false,
-        upThisFrame: false
+        upThisFrame: false,
+        lock: false
       };
       return false;
     }
     return this.keyStates[key].state;
   }
 
-  keyPressed(key) {
+  keyPressed(key: string) {
     return this.keyIsDown(key) && this.keyStates[key].downThisFrame;
   }
 
-  keyReleased(key) {
+  keyReleased(key: string) {
     return !this.keyIsDown(key) && this.keyStates[key].upThisFrame;
   }
 
@@ -69,5 +81,3 @@ class Input {
     });
   }
 }
-
-module.exports = Input;
