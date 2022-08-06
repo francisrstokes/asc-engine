@@ -1,20 +1,38 @@
-const {vAdd} = require('vec-la-fp');
-const EventProvider = require('./EventProvider');
+import { EventProvider } from "./EventProvider";
+import { Game } from "./Game";
+import { Tile } from "./Tile";
+import { vAdd, Vector } from "./Vector";
 
-class Animation extends EventProvider {
-  constructor(timeline, animationLength, pos, times = 1, loop = false) {
+export type AnimationTimelineElement = {
+  pos: Vector;
+  tile: Tile;
+}[]
+
+type AnimationEvents = {
+  complete: number;
+}
+
+export class Animation<G extends Game> extends EventProvider<AnimationEvents> {
+  timeline: AnimationTimelineElement[];
+  animationLength: number;
+  pos: Vector;
+  active = false;
+  loop: boolean;
+  frame = 0;
+  times: number;
+  freezeOnLastFrame = false;
+  state = 0;
+  isComplete = false;
+
+  constructor(timeline: AnimationTimelineElement[], animationLength: number, pos: Vector, times = 1, loop = false) {
     super();
 
     this.timeline = timeline;
     this.active = false;
     this.pos = pos;
-    this.frame = 0;
     this.animationLength = animationLength;
     this.loop = loop;
     this.times = times;
-    this.freezeOnLastFrame = false;
-
-    this.state = 0;
   }
 
   start() {
@@ -32,7 +50,7 @@ class Animation extends EventProvider {
     this.frame = 0;
   }
 
-  draw(game, tileToScreen) {
+  draw(game: G, tileToScreen: (v: Vector) => Vector) {
     if (this.active) {
       this.state = Math.floor(this.frame / (this.animationLength / (this.timeline.length * this.times))) % this.timeline.length;
 
@@ -47,14 +65,12 @@ class Animation extends EventProvider {
           if (this.loop) {
             this.frame = 0;
           } else {
-
+            this.trigger('complete', this.frame);
             if (this.freezeOnLastFrame) {
               this.isComplete = true;
             } else {
               this.reset();
             }
-
-            this.trigger('complete');
           }
         } else {
           this.frame++;
@@ -68,9 +84,9 @@ class Animation extends EventProvider {
       this.timeline,
       this.animationLength,
       this.pos,
+      this.times,
       this.loop
     );
   }
 }
 
-module.exports = Animation;

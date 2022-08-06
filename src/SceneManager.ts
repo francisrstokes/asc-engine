@@ -1,21 +1,25 @@
-class SceneManager {
-  constructor(game) {
+import { Scene } from "./Scene";
+
+export class SceneManager<G> {
+  game: G;
+  scenes: Record<string, Scene<G>> = {};
+  active: Scene<G> | null = null;
+
+  constructor(game: G) {
     this.game = game;
-    this.scenes = {};
-    this.active = null;
   }
 
-  add(scene, id) {
+  add(scene: Scene<G>, id: string) {
     this.scenes[id] = scene;
   }
 
-  get(id) {
+  get(id: string) {
     return this.scenes[id]
       ? this.scenes[id]
       : null;
   }
 
-  setScene(id) {
+  setScene(id: string) {
     if (!(id in this.scenes)) {
       throw new Error(`No scene with id ${id}`);
     }
@@ -28,5 +32,3 @@ class SceneManager {
     this.active.load(this.game);
   }
 }
-
-module.exports = SceneManager;
